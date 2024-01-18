@@ -5,6 +5,14 @@ LFlags=-lm -lraylib -lglfw
 # Path: src/
 SRC=src/
 CFiles=$(wildcard $(SRC)*.c)
+OFiles=$(CFiles:.c=.o)
  
-spaceinvaders: $(CFiles)
-	$(CC) $(CFlags) -o spaceinvaders $(CFiles)  $(LFlags)
+spaceinvaders: $(OFiles)
+	$(CC) $(CFlags) -o spaceinvaders $^ $(LFlags)
+
+%.o: %.c
+	$(CC) $(CFlags) -c -o $@ $< 
+
+clean:
+	rm -f $(SRC)*.o spaceinvaders
+

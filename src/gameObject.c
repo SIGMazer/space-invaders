@@ -9,9 +9,9 @@ GameObject spawnGameObject(Vector2 pos, Vector2 size, Texture2D texture){
     return gameObject;
 }
 
-void moveGameObject(GameObject *gameObject, Vector2 velocity){
-    gameObject->pos.x += velocity.x*GetFrameTime();
-    gameObject->pos.y += velocity.y*GetFrameTime();
+void moveGameObject(GameObject *gameObject, Vector2 direction,float velocity){
+    gameObject->pos.x += direction.x*velocity*GetFrameTime();
+    gameObject->pos.y += direction.y*velocity*GetFrameTime();
 }
 
 void renderGameObject(GameObject *gameObject){
