@@ -4,6 +4,7 @@ LFlags=-lm -lraylib -lglfw
 
 # Path: src/
 SRC=src/
+CFiles=$(wildcard $(SRC)*.c)
  
-spaceinvaders: $(SRC)main.c 
-	$(CC) $(CFlags) -o spaceinvaders  $(SRC)main.c $(LFlags)
+spaceinvaders: $(CFiles)
+	$(CC) $(CFlags) -o spaceinvaders $(CFiles)  $(LFlags)

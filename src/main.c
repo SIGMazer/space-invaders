@@ -1,49 +1,26 @@
-#include <raylib.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdio.h>
+#include "defs.h"
 
-const size_t screenWidth = 800;
-const size_t screenHeight = 600;
-const size_t playerVelocity = 200;
-const size_t bulletVelocity = 400;
 
-typedef struct Player{
-    Vector2 pos;
-    Vector2 size;
-    Texture2D texture;
-} Player;
-
-typedef struct Bullet{
-    Vector2 pos;
-    Vector2 size;
-    Rectangle rect;
-} Bullet;
-
-typedef struct {
-    Bullet *items;
-    size_t size;
-    size_t capacity;
-} BulletArray;
 
 Player spwanPlayer(){
     Image playerImage = LoadImage("assets/player.png");
     Texture2D playerTexture = LoadTextureFromImage(playerImage);
+    GameObject playerObject = spawnGameObject((Vector2){screenWidth/2.0, screenHeight - 50}, (Vector2){50, 50}, playerTexture);
     Player player = {
-        (Vector2){(float)screenWidth/2.0, screenHeight - playerTexture.height*2},
-        (Vector2){playerTexture.width, playerTexture.height},
-        playerTexture
+        playerObject,
+        PLAYER
     };
+
     return player;
 }
 
 void movePlayer(Player *player){
     float dt = GetFrameTime();
     if(IsKeyDown(KEY_A)){
-        player->pos.x -= playerVelocity*dt; 
+        player->base.pos.x -= playerVelocity*dt; 
     }
     if(IsKeyDown(KEY_D)){
-        player->pos.x += playerVelocity*dt;
+        player->base.pos.x += playerVelocity*dt; 
     }
 }
 
@@ -66,21 +43,23 @@ void movePlayer(Player *player){
     }\
 }while(0)
 
-BulletArray bullets = {0};
 
 
 void playerShoot(Player *player){
+    Texture2D bulletTexture = {0};
+    Rectangle bulletRect = (Rectangle){player->base.pos.x + player->base.size.x/2, player->base.pos.y, 5, 10};
+    SetShapesTexture(bulletTexture, bulletRect);
+
     Bullet bullet = {
-        (Vector2){player->pos.x + player->size.x/2, player->pos.y},
-        (Vector2){5, 10},
-        (Rectangle){player->pos.x + player->size.x/2, player->pos.y, 5, 10}
+        .pos = (Vector2){player->base.pos.x + player->base.size.x/2, player->base.pos.y},
+        .size = (Vector2){5, 10},
+        .texture = bulletTexture,
     };
     da_append(&bullets, bullet);
 } 
 
 void bulletMove(Bullet *bullet){
     bullet->pos.y -= bulletVelocity*GetFrameTime();
-    bullet->rect.y -= bulletVelocity*GetFrameTime();
 }
 void bulletRender(){
     for(size_t i = 0; i < bullets.size; i++){
@@ -93,8 +72,9 @@ void bulletRender(){
 }
 
 
+BulletArray bullets = {NULL, 0, 0};
+
 int main(void){
-    
     InitWindow(screenWidth, screenHeight, "space invaders");
     SetTargetFPS(60);
     Player player = spwanPlayer();
@@ -102,7 +82,7 @@ int main(void){
     while(!WindowShouldClose()){
         BeginDrawing();
         ClearBackground(bg);
-        DrawTexture(player.texture, player.pos.x, player.pos.y, WHITE);
+        DrawTexture(player.base.texture, player.base.pos.x, player.base.pos.y, WHITE);
         movePlayer(&player);
         if(IsKeyPressed(KEY_SPACE)){
             playerShoot(&player);
