@@ -1,6 +1,7 @@
 #include "defs.h"
 
 Image playerImage = {0};
+static Sound shootingSound = {0};
 Player spwanPlayer(){
     playerImage = (playerImage.data == NULL) ? LoadImage("assets/player.png") : playerImage;
     Texture2D playerTexture = LoadTextureFromImage(playerImage);
@@ -37,5 +38,6 @@ void playerShoot(Player *player){
         },
         PLAYER
     };
+    PlaySound(shootingSound);
     da_append(&bullets, bullet);
 } 

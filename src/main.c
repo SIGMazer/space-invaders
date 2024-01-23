@@ -1,6 +1,7 @@
 #include "defs.h"
+#include <raylib.h>
 
-static GameState state = GAME;
+static GameState state = MENU;
 static size_t score = 0;
 
 void bulletMove(Bullet *bullet){
@@ -75,15 +76,38 @@ void DrawScore(){
     DrawText(TextFormat("Score: %d", score), 10, 10, 20, WHITE);
 }
 
+void menu(){
+    Color bg = {18, 18, 18, 255};
+    ClearBackground(bg);
+    DrawText("Space invaders", screenWidth/2 - MeasureText("Space invaders", 50)/2, screenHeight/2 - 100, 50, WHITE);
+    DrawText("Press enter to start", screenWidth/2 - MeasureText("Press enter to start", 20)/2, screenHeight/2, 20, WHITE);
+}
+
 int main(void){
     srand(time(NULL));
     InitWindow(screenWidth, screenHeight, "Space invaders");
     SetTargetFPS(60);
     Player player = spwanPlayer();
     Color bg = {18, 18, 18, 255};
+    InitAudioDevice();
+    Music music = LoadMusicStream("assets/main.mp3");
+    if(IsMusicReady(music))
+        PlayMusicStream(music);
+    Sound shooting = LoadSound("assets/alienshoot1.wav");
+    SetSoundVolume(shooting, 0.4f);
     initEnemies();
     while(!WindowShouldClose()){
         BeginDrawing();
+        UpdateMusicStream(music);
+        if(state == MENU){
+            menu();
+            if(IsKeyPressed(KEY_ENTER)){
+                state = GAME;
+            }
+            EndDrawing();
+            continue;
+        }
+
         if (state == END || state == WIN){
             if(IsKeyPressed(KEY_ENTER)){
                 state = GAME;
@@ -96,15 +120,17 @@ int main(void){
             }
         }
         if(state == WIN){
-            ClearBackground(BLACK);
+            ClearBackground(bg);
             DrawText("YOU WIN", screenWidth/2 - MeasureText("YOU WIN", 50)/2, screenHeight/2 - 50, 50, WHITE);
+            DrawText("Press enter to restart", screenWidth/2 - MeasureText("Press enter to restart", 20)/2, screenHeight/2, 20, WHITE);
             EndDrawing();
             continue;
         }
 
         if(state == END){
-            ClearBackground(BLACK);
+            ClearBackground(bg);
             DrawText("GAME OVER", screenWidth/2 - MeasureText("GAME OVER", 50)/2, screenHeight/2 - 50, 50, WHITE);
+            DrawText("Press enter to restart", screenWidth/2 - MeasureText("Press enter to restart", 20)/2, screenHeight/2, 20, WHITE);
             EndDrawing();
             continue;
         }
@@ -114,10 +140,11 @@ int main(void){
         movePlayer(&player);
         if(IsKeyPressed(KEY_SPACE)){
             playerShoot(&player);
+            PlaySound(shooting);
         }
         for(size_t i = 0; i < enemies.size; i++){
             if(enemies.items[i].active){
-                if(rand() % 1150 == 0){
+                if(rand() % 800 == 0){
                     enemyShoot(&enemies.items[i]);
                 }
             }
