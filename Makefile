@@ -11,7 +11,7 @@ spaceinvaders: $(OFiles)
 	$(CC) $(CFlags) -o spaceinvaders $^ $(LFlags)
 
 wasm: $(CFiles)
-	emcc $(CFiles) -Os -o ./build/spaceinvaders.html $(CFLAGS) 	raylib/libraylib.a \
+	emcc $(CFiles) -Os -o ./build/index.html $(CFLAGS) 	raylib/libraylib.a \
 		-I. -I /usr/local/include \
 		-s USE_GLFW=3 \
 		-s ASYNCIFY \
