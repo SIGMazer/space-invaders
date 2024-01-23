@@ -24,17 +24,26 @@ void movePlayer(Player *player){
 
     moveGameObject(&player->base, direction, playerVelocity);
 }
+static RenderTexture2D bulletTexture = {0};
+
+void playerBullet(){
+    bulletTexture = LoadRenderTexture(5, 10);
+    BeginTextureMode(bulletTexture);
+        ClearBackground(RED);
+    EndTextureMode();
+}
 
 void playerShoot(Player *player){
-    Texture2D bulletTexture = {0};
-    Rectangle bulletRect = (Rectangle){player->base.pos.x + player->base.size.x/2, player->base.pos.y, 5, 10};
-    SetShapesTexture(bulletTexture, bulletRect);
+
+    if(bulletTexture.texture.id == 0){
+        playerBullet();
+    }
 
     Bullet bullet = {
         .base ={
             .pos = (Vector2){player->base.pos.x + player->base.size.x/2, player->base.pos.y},
             .size = (Vector2){5, 10},
-            .texture = bulletTexture,
+            .texture = bulletTexture.texture,
         },
         PLAYER
     };

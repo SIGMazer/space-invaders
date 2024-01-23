@@ -14,7 +14,10 @@ void bulletMove(Bullet *bullet){
 
 void bulletRender(){
     for(size_t i = 0; i < bullets.size; i++){
-        DrawRectangle(bullets.items[i].base.pos.x, bullets.items[i].base.pos.y, bullets.items[i].base.size.x, bullets.items[i].base.size.y, WHITE);
+        if(bullets.items[i].type == PLAYER)
+            DrawTexture(bullets.items[i].base.texture, bullets.items[i].base.pos.x, bullets.items[i].base.pos.y, WHITE);
+        else
+            DrawRectangle(bullets.items[i].base.pos.x, bullets.items[i].base.pos.y, bullets.items[i].base.size.x, bullets.items[i].base.size.y, GREEN);
         bulletMove(&bullets.items[i]);
         if(bullets.items[i].base.pos.y < 0){
             da_remove(&bullets, i);
@@ -149,7 +152,7 @@ int main(void){
                 }
             }
         }
-        if(score == 800)
+        if(enemies.actives == 0)
             state = WIN;
         detectCollision(player);
         enemyPattern();

@@ -2,7 +2,7 @@
 
 
 // 1 row yellow, 2 row green, 3 row red, 8 columns
-EnemyArray enemies = {NULL, 0, 0};
+EnemyArray enemies = {NULL, 0, 0, 0};
 static Image red = {0};
 static Image green = {0};
 static Image yellow = {0};
@@ -70,17 +70,25 @@ void enemyPattern() {
         }
     }
 }
+static RenderTexture2D bulletTexture = {0};
+void enemyBullet(){
+    bulletTexture = LoadRenderTexture(5, 10);
+    BeginTextureMode(bulletTexture);
+    ClearBackground(GREEN);
+    EndTextureMode();
+}
 
 void enemyShoot(Enemy *enemy){
-    Texture2D bulletTexture = {0};
-    Rectangle bulletRect = (Rectangle){enemy->base.pos.x + enemy->base.size.x/2, enemy->base.pos.y, 5, 10};
-    SetShapesTexture(bulletTexture, bulletRect);
+
+    if(bulletTexture.texture.id == 0){
+        enemyBullet();
+    }
 
     Bullet bullet = {
         .base ={
             .pos = (Vector2){enemy->base.pos.x + enemy->base.size.x/2, enemy->base.pos.y},
             .size = (Vector2){5, 10},
-            .texture = bulletTexture,
+            .texture = bulletTexture.texture,
         },
         ENEMY
     };
